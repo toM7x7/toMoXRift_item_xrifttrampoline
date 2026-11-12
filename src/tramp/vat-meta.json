@@ -1,0 +1,12 @@
+{
+ "R": 3,
+ "K": 8,
+ "QSTEP": 0.125,
+ "FRAMES": 36,
+ "FPS": 30,
+ "SECTORS": 64,
+ "RINGS": 28,
+ "COLS": 16,
+ "width": 1040,
+ "height": 504
+}

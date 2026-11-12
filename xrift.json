@@ -1,0 +1,14 @@
+{
+  "item": {
+    "distDir": "./dist",
+    "buildCommand": "npm run build",
+    "title": "トランポリン",
+    "description": "跳ねるたびに高く上がるトランポリンです。真ん中ほど高く跳べます（最高15m）。",
+    "thumbnailPath": "thumbnail.png",
+    "ignore": [
+      "**/*.map",
+      "**/*.d.ts",
+      "**/index.html"
+    ]
+  }
+}

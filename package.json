@@ -1,0 +1,35 @@
+{
+  "name": "xrift-trampoline",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1 --port 5313 --strictPort",
+    "typecheck": "tsc --noEmit",
+    "bake": "node scripts/bake-vat.mjs",
+    "check:logic": "node scripts/logic-check.mjs",
+    "check:bounce": "node scripts/bounce-check.mjs",
+    "build": "npm run typecheck && vite build --mode item"
+  },
+  "dependencies": {
+    "@pmndrs/uikit": "1.0.64",
+    "@react-three/drei": "10.7.7",
+    "@react-three/fiber": "9.5.0",
+    "@react-three/rapier": "2.2.0",
+    "@react-three/uikit": "1.0.64",
+    "@xrift/world-components": "0.60.0",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "three": "0.183.1"
+  },
+  "devDependencies": {
+    "@originjs/vite-plugin-federation": "1.4.1",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "@types/three": "0.183.1",
+    "@vitejs/plugin-react": "5.1.4",
+    "typescript": "5.9.3",
+    "vite": "7.3.1"
+  }
+}
