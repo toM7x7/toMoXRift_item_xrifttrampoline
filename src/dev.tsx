@@ -1,6 +1,6 @@
 import {Canvas,useFrame} from '@react-three/fiber'
 import {CapsuleCollider,Physics,RigidBody,useAfterPhysicsStep,type RapierRigidBody} from '@react-three/rapier'
-import {DevEnvironment,ItemProvider,XRiftProvider,useUsers,type PlayerMovement,type UsersContextValue} from '@xrift/world-components'
+import {DevEnvironment,ItemProvider,XRiftProvider,useUsers,type ItemPlacer,type PlayerMovement,type UsersContextValue} from '@xrift/world-components'
 import {useMemo,useRef} from 'react'
 import {createRoot} from 'react-dom/client'
 import type {Group} from 'three'
@@ -16,6 +16,8 @@ const nums=(k:string)=>params.get(k)?.split(',').map(Number)
 const lab=params.has('lab')
 const spawn=(nums('spawn')??(lab?[0,2.6,0]:[0,0.9,7.2])) as [number,number,number]
 const cam=nums('cam')
+const ME:ItemPlacer={id:'user-me',displayName:'me',avatarUrl:null,isLocalUser:true}
+const OTHER:ItemPlacer={id:'user-other',displayName:'other',avatarUrl:null,isLocalUser:false}
 if(params.get('drive')==='frame')(globalThis as {__trampDrive?:string}).__trampDrive='frame'
 // ?carry=1  物理上の体を探さず、足元の位置だけで動かす（体が見つからない場合の動きを確かめる）
 if(params.has('carry'))(globalThis as {__trampNoExact?:boolean}).__trampNoExact=true
@@ -138,7 +140,13 @@ function App(){
      {cam&&cam.length===6&&<CameraPin pose={cam}/>}
      <Probe marker={!!cam}/>
      <Scenery/>
-     <ItemProvider id="tramp-dev"><Item/></ItemProvider>
+     <ItemProvider id="tramp-dev" placedBy={ME}><Item/></ItemProvider>
+     {/* ?copies=1: 自分がもう2個、他の人が1個置いた状態。自分の2個目以降は出ず、他の人の1個は出る */}
+     {params.has('copies')&&<>
+      <ItemProvider id="tramp-dev-b" placedBy={ME}><Item position={[9,0,0]}/></ItemProvider>
+      <ItemProvider id="tramp-dev-c" placedBy={ME}><Item position={[-9,0,0]}/></ItemProvider>
+      <ItemProvider id="tramp-other" placedBy={OTHER}><Item position={[0,0,-9]}/></ItemProvider>
+     </>}
     </DevEnvironment>
    </div>
   </XRiftProvider>

@@ -1,11 +1,12 @@
 import {useFrame} from '@react-three/fiber'
 import {CylinderCollider,RigidBody,useBeforePhysicsStep,type RapierRigidBody} from '@react-three/rapier'
-import {useUsers,useXRift} from '@xrift/world-components'
-import {useEffect,useMemo,useRef} from 'react'
+import {useItem,usePlacementState,useUsers,useXRift} from '@xrift/world-components'
+import {useEffect,useLayoutEffect,useMemo,useRef,useSyncExternalStore} from 'react'
 import {DoubleSide,LatheGeometry,Matrix4,Vector2,Vector3,type Group} from 'three'
 import {playBoing} from './tramp/audio'
 import {TRAMP,clearExact,createBounce,observe,setExact,stepBounce} from './tramp/bounce.mjs'
 import {MAX_DENTS,MAX_RINGS,VAT_FILE,VAT_META,createMembrane} from './tramp/membrane'
+import {isLive,registerPlacement,subscribePlacements} from './tramp/placements.mjs'
 
 export type ItemProps={position?:[number,number,number];rotation?:[number,number,number];scale?:number}
 
@@ -34,7 +35,26 @@ function padGeometry(){
  return new LatheGeometry(pts,5,0.006,span-0.012)
 }
 
-export function Item({position=[0,0,0],rotation=[0,0,0],scale=1}:ItemProps){
+/**
+ * 1人1個まで。同じ人が2個目以降を置いても、そのコピーは何も出さない（placements.mjs）。
+ * 本体に「1個だけ」の設定がないので、アイテム側で守る。
+ */
+export function Item(props:ItemProps){
+ const {id,placedBy}=useItem()
+ const preview=usePlacementState().mode==='preview'
+ const placer=placedBy?.id??null
+ useLayoutEffect(()=>registerPlacement(id,preview,placer),[id,preview,placer])
+ const live=useSyncExternalStore(subscribePlacements,()=>isLive(id),()=>true)
+ useEffect(()=>{
+  if(!import.meta.env.DEV)return
+  const g=globalThis as {__trampLive?:Record<string,boolean>}
+  ;(g.__trampLive??={})[id]=live
+  return ()=>{delete g.__trampLive?.[id]}
+ },[id,live])
+ return live?<Trampoline {...props}/>:null
+}
+
+function Trampoline({position=[0,0,0],rotation=[0,0,0],scale=1}:ItemProps){
  const {baseUrl}=useXRift()
  const users=useUsers()
  const usersRef=useRef(users)
